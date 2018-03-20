@@ -1,0 +1,12 @@
+[Unit]
+Description=Live video stream
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi
+EnvironmentFile=-/home/pi/livestream.conf
+ExecStart=/bin/sh /home/pi/livestream.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
