@@ -16,7 +16,7 @@ pycam \
 	${CAMERA_VFLIP:+--vflip} \
 	${CAMERA_HFLIP:+--hflip} \
 	${CAMERA_RESOLUTION:+--resolution $CAMERA_RESOLUTION} |
-ffmpeg -hide_banner -loglevel $FFMPEG_LOGLEVEL -re \
+ffmpeg -hide_banner -loglevel $FFMPEG_LOGLEVEL \
 	-ar 44100 -ac 2 -acodec pcm_s16le \
 	-f s16le -ac 2 -i /dev/zero \
 	-thread_queue_size $FFMPEG_THREAD_QUEUE_SIZE \
