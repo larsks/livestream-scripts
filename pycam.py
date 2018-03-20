@@ -21,13 +21,6 @@ RESOLUTIONS = {
 
 def parse_args():
     p = argparse.ArgumentParser()
-    p.add_argument('--annotate', '-a',
-                   default='%Y-%m-%d %H:%M')
-    p.add_argument('--annotate-background', '-g',
-                   default='black')
-    p.add_argument('--annotate-interval', '-i',
-                   type=int,
-                   default=60)
     p.add_argument('--hflip',
                    action='store_true')
     p.add_argument('--vflip',
@@ -49,6 +42,24 @@ def parse_args():
                    type=int)
     p.add_argument('--awb-mode', '--awb',
                    choices=picamera.PiCamera.AWB_MODES.keys())
+
+    g = p.add_argument_group('Output')
+    g.add_argument('--output', '-o',
+                   type=argparse.FileType('wb'),
+                   default=sys.stdout.buffer)
+
+    g = p.add_argument_group('Annotation')
+    g.add_argument('--annotate', '-a',
+                   default='%Y-%m-%d %H:%M')
+    g.add_argument('--annotate-background', '-g',
+                   default='black')
+    g.add_argument('--annotate-interval', '-i',
+                   type=int,
+                   default=60)
+    g.add_argument('--no-annotate',
+                   dest='annotate',
+                   action='store_const',
+                   const=None)
 
     g = p.add_argument_group('Logging')
     g.add_argument('--verbose', '-v',
@@ -100,11 +111,11 @@ def main():
 
     if args.annotate is not None:
         camera.annotate_text = datetime.datetime.now().strftime(args.annotate)
+        if args.annotate_background is not None:
+            camera.annotate_background = picamera.Color(
+                args.annotate_background)
 
-    if args.annotate_background is not None:
-        camera.annotate_background = picamera.Color(args.annotate_background)
-
-    camera.start_recording(sys.stdout.buffer, format='h264')
+    camera.start_recording(args.output, format='h264')
 
     try:
         while True:
