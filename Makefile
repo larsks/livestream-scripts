@@ -8,7 +8,11 @@ install: install-scripts install-units
 install-scripts:
 	$(INSTALL) -m 755 uv4l-updateoverlay.sh /usr/local/bin/uv4l-updateoverlay
 
-install-units: install-services install-timers
+install-units: install-services install-timers install-config
+
+install-config:
+	$(INSTALL) -m 644 uv4l/uv4l-raspicam.conf /etc/uv4l/uv4l-raspicam.conf
+	$(INSTALL) -m 644 uv4l/text_template.json /etc/uv4l/text_template.json
 
 install-services:
 	$(INSTALL) -m 644 systemd/uv4l-updateoverlay.service \
