@@ -1,0 +1,9 @@
+[Unit]
+Description=periodically update uv4l text overlay
+BindsTo=uv4l_raspicam.service
+
+[Timer]
+OnCalendar=minutely
+
+[Install]
+WantedBy=timers.target

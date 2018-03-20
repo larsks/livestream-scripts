@@ -1,0 +1,6 @@
+[Unit]
+Description=Update uv4l text overlay
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/uv4l-updateoverlay
