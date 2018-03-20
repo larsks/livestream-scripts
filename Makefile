@@ -17,5 +17,7 @@ install-services:
 	$(INSTALL) -m 644 systemd/livestream.service \
 		/etc/systemd/system/livestream.service
 
+install-timers:
+
 daemon-reload:
 	$(SYSTEMCTL) daemon-reload
