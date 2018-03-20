@@ -106,7 +106,7 @@ def main():
         LOG.info('constrast = %d', args.contrast)
         camera.contrast = args.contrast
     if args.awb_mode is not None:
-        LOG.info('awb_mode = %d', args.awb_mode)
+        LOG.info('awb_mode = %s', args.awb_mode)
         camera.awb_mode = args.awb_mode
 
     if args.annotate is not None:
