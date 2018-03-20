@@ -6,7 +6,8 @@ all:
 install: install-scripts install-units
 
 install-scripts:
-	$(INSTALL) -m 755 livestream.sh /home/pi/livestream.sh
+	$(INSTALL) -m 755 pycam.py /usr/local/bin/pycam
+	$(INSTALL) -m 755 livestream.sh /usr/local/bin/livestream
 
 install-units: install-services install-timers install-config
 

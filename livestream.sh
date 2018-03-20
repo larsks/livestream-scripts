@@ -1,25 +1,23 @@
 #!/bin/sh
 
-: ${CAMERA_BRIGHTNESS:=50}
-: ${CAMERA_CONTRAST:=0}
-: ${CAMERA_AWB:=6}
-: ${CAMERA_VFLIP:=0}
-: ${CAMERA_HFLIP:=0}
-
 : ${FFMPEG_LOGLEVEL:=warning}
-: ${FFMPEG_VIDEO_SIZE:=1024x768}
-: ${FFMPEG_FRAMERATE:=20}
 
-v4l2-ctl \
-	-c brightness=$CAMERA_BRIGHTNESS \
-	-c contrast=$CAMERA_CONTRAST \
-	-c vertical_flip=$CAMERA_VFLIP \
-	-c horizontal_flip=$CAMERA_HFLIP \
-	-c white_balance_auto_preset=$CAMERA_AWB
+if [ -z "$YOUTUBE_STREAM_KEY" ]; then
+	echo "ERROR: missing youtube stream key" >&2
+	exit 1
+fi
 
+pycam \
+	${CAMERA_AWB:+--awb $CAMERA_AWB} \
+	${CAMERA_BRIGHTNESS:+--brightness $CAMERA_BRIGHTNESS} \
+	${CAMERA_CONTRAST:+--contrast $CAMERA_CONTRAST} \
+	${CAMERA_FRAMERATE:+--fps $CAMERA_FRAMERATE} \
+	${CAMERA_VFLIP:+--vflip} \
+	${CAMERA_HFLIP:+--hflip} \
+	${CAMERA_RESOLUTION:+--resolution $CAMERA_RESOLUTION} |
 ffmpeg -hide_banner -loglevel $FFMPEG_LOGLEVEL -re \
 	-ar 44100 -ac 2 -acodec pcm_s16le \
 	-f s16le -ac 2 -i /dev/zero \
-	-f v4l2 -input_format h264 -video_size $FFMPEG_VIDEO_SIZE -framerate $FFMPEG_FRAMERATE -i /dev/video0 \
+	-f h264 -i - \
 	-vcodec copy -acodec aac -ab 128k -g 50 -strict experimental \
-	-f flv rtmp://a.rtmp.youtube.com/live2/bbbp-ydpm-87tb-8pzx
+	-f flv rtmp://a.rtmp.youtube.com/live2/${YOUTUBE_STREAM_KEY}

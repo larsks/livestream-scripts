@@ -90,10 +90,10 @@ def main():
         camera.hflip = args.hflip
     if args.brightness is not None:
         LOG.info('brightness = %d', args.brightness)
-        camera.brightness = args.brightess
+        camera.brightness = args.brightness
     if args.contrast is not None:
-        LOG.info('constrast = %d', args.constrast)
-        camera.contrast = args.brightess
+        LOG.info('constrast = %d', args.contrast)
+        camera.contrast = args.contrast
     if args.awb_mode is not None:
         LOG.info('awb_mode = %d', args.awb_mode)
         camera.awb_mode = args.awb_mode

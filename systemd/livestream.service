@@ -5,7 +5,7 @@ Description=Live video stream
 User=pi
 WorkingDirectory=/home/pi
 EnvironmentFile=-/home/pi/livestream.conf
-ExecStart=/bin/sh /home/pi/livestream.sh
+ExecStart=/usr/local/bin/livestream
 Restart=on-failure
 
 [Install]
