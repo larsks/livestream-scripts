@@ -21,27 +21,37 @@ RESOLUTIONS = {
 
 def parse_args():
     p = argparse.ArgumentParser()
-    p.add_argument('--hflip',
+
+    g = p.add_argument_group('Camera')
+    g.add_argument('--hflip',
                    action='store_true')
-    p.add_argument('--vflip',
+    g.add_argument('--vflip',
                    action='store_true')
-    p.add_argument('--width', '-W',
+    g.add_argument('--width', '-W',
                    type=int,
                    default=854)
-    p.add_argument('--height', '-H',
+    g.add_argument('--height', '-H',
                    type=int,
                    default=480)
-    p.add_argument('--resolution', '-r',
+    g.add_argument('--resolution', '-r',
                    choices=RESOLUTIONS.keys())
-    p.add_argument('--framerate', '--fps',
+    g.add_argument('--framerate', '--fps',
                    type=int,
                    default=30)
-    p.add_argument('--brightness', '--br',
+    g.add_argument('--brightness', '--br',
                    type=int)
-    p.add_argument('--contrast', '--co',
+    g.add_argument('--contrast', '--co',
                    type=int)
-    p.add_argument('--awb-mode', '--awb',
+    g.add_argument('--awb-mode', '--awb',
                    choices=picamera.PiCamera.AWB_MODES.keys())
+
+
+    g = p.add_argument_group('Encoding')
+    g.add_argument('--bitrate', '-b',
+                   type=int)
+    g.add_argument('--format', '-f',
+                   default='h264')
+
 
     g = p.add_argument_group('Output')
     g.add_argument('--output', '-o',
@@ -115,7 +125,14 @@ def main():
             camera.annotate_background = picamera.Color(
                 args.annotate_background)
 
-    camera.start_recording(args.output, format='h264')
+    record_options = {}
+
+    if args.bitrate is not None:
+        LOG.info('bitrate = %d', args.bitrate)
+        record_options['bitrate'] = args.bitrate
+
+    camera.start_recording(args.output, format=args.format,
+                           **record_options)
 
     try:
         while True:
