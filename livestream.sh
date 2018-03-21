@@ -9,6 +9,7 @@ if [ -z "$YOUTUBE_STREAM_KEY" ]; then
 fi
 
 pycam \
+	${CAMERA_BITRATE:+--bitrate $CAMERA_BITRATE} \
 	${CAMERA_AWB:+--awb $CAMERA_AWB} \
 	${CAMERA_BRIGHTNESS:+--brightness $CAMERA_BRIGHTNESS} \
 	${CAMERA_CONTRAST:+--contrast $CAMERA_CONTRAST} \
