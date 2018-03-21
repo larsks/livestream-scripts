@@ -8,17 +8,7 @@ if [ -z "$YOUTUBE_STREAM_KEY" ]; then
 	exit 1
 fi
 
-pycam \
-	${CAMERA_BITRATE:+--bitrate $CAMERA_BITRATE} \
-	${CAMERA_AWB:+--awb $CAMERA_AWB} \
-	${CAMERA_BRIGHTNESS:+--brightness $CAMERA_BRIGHTNESS} \
-	${CAMERA_CONTRAST:+--contrast $CAMERA_CONTRAST} \
-	${CAMERA_FRAMERATE:+--fps $CAMERA_FRAMERATE} \
-	${CAMERA_VFLIP:+--vflip} \
-	${CAMERA_HFLIP:+--hflip} \
-	${CAMERA_WIDTH:+--width $CAMERA_WIDTH} \
-	${CAMERA_HEIGHT:+--height $CAMERA_HEIGHT} \
-	${CAMERA_RESOLUTION:+--resolution $CAMERA_RESOLUTION} |
+pycam --an '%Y-%m-%d %H:%M' --ai 60 --ab black |
 ffmpeg -hide_banner -loglevel $FFMPEG_LOGLEVEL \
 		-ar 44100 -ac 2 -acodec pcm_s16le -f s16le -ac 2 \
 	-i /dev/zero \
