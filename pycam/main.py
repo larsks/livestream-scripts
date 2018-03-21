@@ -8,11 +8,10 @@ import sys
 
 try:
     import picamera
-    AWB_MODES = picamera.PiCamera.AWB_MODES
 except ImportError:
-    picamera = None
-    AWB_MODES = {'dummy': 0}
+    from pycam import fake_picamera as picamera
 
+AWB_MODES = picamera.PiCamera.AWB_MODES
 LOG = logging.getLogger(__name__)
 
 RESOLUTIONS = {
@@ -25,6 +24,7 @@ RESOLUTIONS = {
     '240p': (426, 240),
 }
 
+
 @click.command()
 @click.option('-R', '--resolution', type=click.Choice(RESOLUTIONS.keys()))
 @click.option('-h', '--height', type=int)
@@ -36,7 +36,7 @@ RESOLUTIONS = {
 @click.option('--format', default='h264')
 @click.option('-B', '--brightness', type=int, default=50)
 @click.option('-C', '--contrast', type=int, default=0)
-@click.option('-W', '--awb-mode', type=click.Choice(AWB_MODES), default='auto')
+@click.option('-W', '--awb-mode', type=click.Choice(AWB_MODES))
 @click.option('--an', '--annotate-text')
 @click.option('--as', '--annotate-text-size', type=int)
 @click.option('--ab', '--annotate-background')
@@ -69,7 +69,9 @@ def main(resolution, height, width, bitrate, vflip, hflip,
     camera.hflip = hflip
     camera.brightness = brightness
     camera.contrast = contrast
-    camera.awb_mode = awb_mode
+
+    if awb_mode is not None:
+        camera.awb_mode = awb_mode
 
     if annotate_text:
         camera.annotate_text = datetime.datetime.now().strftime(annotate_text)
