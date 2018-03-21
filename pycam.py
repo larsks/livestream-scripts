@@ -1,10 +1,17 @@
 #!/usr/bin/python3
 
-import argparse
+import click
 import logging
-import picamera
 import datetime
+import signal
 import sys
+
+try:
+    import picamera
+    AWB_MODES = picamera.PiCamera.AWB_MODES
+except ImportError:
+    picamera = None
+    AWB_MODES = {'dummy': 0}
 
 LOG = logging.getLogger(__name__)
 
@@ -18,132 +25,78 @@ RESOLUTIONS = {
     '240p': (426, 240),
 }
 
+@click.command()
+@click.option('-R', '--resolution', type=click.Choice(RESOLUTIONS.keys()))
+@click.option('-h', '--height', type=int)
+@click.option('-w', '--width', type=int)
+@click.option('-r', '--bitrate', type=int)
+@click.option('--vflip', is_flag=True)
+@click.option('--hflip', is_flag=True)
+@click.option('-f', '--framerate', type=float)
+@click.option('--format', default='h264')
+@click.option('-B', '--brightness', type=int, default=50)
+@click.option('-C', '--contrast', type=int, default=0)
+@click.option('-W', '--awb-mode', type=click.Choice(AWB_MODES), default='auto')
+@click.option('--an', '--annotate-text')
+@click.option('--as', '--annotate-text-size', type=int)
+@click.option('--ab', '--annotate-background')
+@click.option('--ai', '--annotate-interval', type=float, default=60)
+@click.option('--debug', 'loglevel', flag_value='DEBUG')
+@click.option('--verbose', 'loglevel', flag_value='INFO', default=True)
+@click.option('--quiet', 'loglevel', flag_value='WARNING')
+@click.option('-o', '--output', type=click.File(mode='wb'),
+              default=sys.stdout.buffer)
+def main(resolution, height, width, bitrate, vflip, hflip,
+         format, framerate, brightness, contrast, awb_mode,
+         annotate_text, annotate_text_size, annotate_background,
+         annotate_interval, loglevel, output):
+    logging.basicConfig(level=loglevel)
 
-def parse_args():
-    p = argparse.ArgumentParser()
+    camera_kwargs = {}
 
-    g = p.add_argument_group('Camera')
-    g.add_argument('--hflip',
-                   action='store_true')
-    g.add_argument('--vflip',
-                   action='store_true')
-    g.add_argument('--width', '-W',
-                   type=int,
-                   default=854)
-    g.add_argument('--height', '-H',
-                   type=int,
-                   default=480)
-    g.add_argument('--resolution', '-r',
-                   choices=RESOLUTIONS.keys())
-    g.add_argument('--framerate', '--fps',
-                   type=int,
-                   default=30)
-    g.add_argument('--brightness', '--br',
-                   type=int)
-    g.add_argument('--contrast', '--co',
-                   type=int)
-    g.add_argument('--awb-mode', '--awb',
-                   choices=picamera.PiCamera.AWB_MODES.keys())
+    if resolution:
+        camera_kwargs['resolution'] = RESOLUTIONS[resolution]
+    elif width is not None and height is not None:
+        camera_kwargs['resolution'] = (width, height)
 
+    if framerate is not None:
+        camera_kwargs['framerate'] = framerate
 
-    g = p.add_argument_group('Encoding')
-    g.add_argument('--bitrate', '-b',
-                   type=int)
-    g.add_argument('--format', '-f',
-                   default='h264')
+    LOG.info('initializing camera with %s', camera_kwargs)
+    camera = picamera.PiCamera(**camera_kwargs)
 
+    camera.vflip = vflip
+    camera.hflip = hflip
+    camera.brightness = brightness
+    camera.contrast = contrast
+    camera.awb_mode = awb_mode
 
-    g = p.add_argument_group('Output')
-    g.add_argument('--output', '-o',
-                   type=argparse.FileType('wb'),
-                   default=sys.stdout.buffer)
+    if annotate_text:
+        camera.annotate_text = datetime.datetime.now().strftime(annotate_text)
+        if annotate_background is not None:
+            camera.annotate_background = picamera.Color(annotate_background)
+        if annotate_text_size is not None:
+            camera.annotate_text_size = annotate_text_size
 
-    g = p.add_argument_group('Annotation')
-    g.add_argument('--annotate', '-a',
-                   default='%Y-%m-%d %H:%M')
-    g.add_argument('--annotate-background', '-g',
-                   default='black')
-    g.add_argument('--annotate-interval', '-i',
-                   type=int,
-                   default=60)
-    g.add_argument('--no-annotate',
-                   dest='annotate',
-                   action='store_const',
-                   const=None)
+    record_kwargs = {}
 
-    g = p.add_argument_group('Logging')
-    g.add_argument('--verbose', '-v',
-                   dest='loglevel',
-                   action='store_const',
-                   const='INFO')
-    g.add_argument('--quiet', '-q',
-                   dest='loglevel',
-                   action='store_const',
-                   const='WARNING')
-    g.add_argument('--debug',
-                   dest='loglevel',
-                   action='store_const',
-                   const='DEBUG')
+    if bitrate is not None:
+        record_kwargs['bitrate'] = bitrate
+    if format is not None:
+        record_kwargs['format'] = format
 
-    p.set_defaults(loglevel='INFO')
-
-    return p.parse_args()
-
-
-def main():
-    args = parse_args()
-    logging.basicConfig(level=args.loglevel)
-
-    if args.resolution:
-        args.width, args.height = RESOLUTIONS[args.resolution]
-
-    LOG.info('initializing camera with resolution=(%dx%d), framerate=%d',
-             args.width, args.height, args.framerate)
-    camera = picamera.PiCamera(
-        resolution=(args.width, args.height),
-        framerate=args.framerate)
-
-    if args.vflip is not None:
-        LOG.info('vflip = %d', args.vflip)
-        camera.vflip = args.vflip
-    if args.hflip is not None:
-        LOG.info('hflip = %d', args.hflip)
-        camera.hflip = args.hflip
-    if args.brightness is not None:
-        LOG.info('brightness = %d', args.brightness)
-        camera.brightness = args.brightness
-    if args.contrast is not None:
-        LOG.info('constrast = %d', args.contrast)
-        camera.contrast = args.contrast
-    if args.awb_mode is not None:
-        LOG.info('awb_mode = %s', args.awb_mode)
-        camera.awb_mode = args.awb_mode
-
-    if args.annotate is not None:
-        camera.annotate_text = datetime.datetime.now().strftime(args.annotate)
-        if args.annotate_background is not None:
-            camera.annotate_background = picamera.Color(
-                args.annotate_background)
-
-    record_options = {}
-
-    if args.bitrate is not None:
-        LOG.info('bitrate = %d', args.bitrate)
-        record_options['bitrate'] = args.bitrate
-
-    camera.start_recording(args.output, format=args.format,
-                           **record_options)
+    LOG.info('start recording with %s', record_kwargs)
+    camera.start_recording(output, **record_kwargs)
 
     try:
         while True:
-            LOG.debug('update annotation')
-            camera.annotate_text = datetime.datetime.now().strftime(args.annotate)
-            camera.wait_recording(args.annotate_interval)
-    except KeyboardInterrupt:
-        pass
-
-    camera.stop_recording()
-
+            if annotate_text:
+                text = datetime.datetime.now().strftime(annotate_text)
+                LOG.debug('update annotation: %s', text)
+                camera.annotate_text = text
+            camera.wait_recording(annotate_interval)
+    finally:
+        camera.stop_recording()
 
 if __name__ == '__main__':
-    main()
+    main(auto_envvar_prefix='CAMERA')
