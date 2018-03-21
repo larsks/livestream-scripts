@@ -46,7 +46,7 @@ RESOLUTIONS = {
 @click.option('--quiet', 'loglevel', flag_value='WARNING')
 @click.option('-o', '--output', type=click.File(mode='wb'),
               default=sys.stdout.buffer)
-def main(resolution, height, width, bitrate, vflip, hflip,
+def cli(resolution, height, width, bitrate, vflip, hflip,
          format, framerate, brightness, contrast, awb_mode,
          annotate_text, annotate_text_size, annotate_background,
          annotate_interval, loglevel, output):
@@ -105,5 +105,6 @@ def main(resolution, height, width, bitrate, vflip, hflip,
     finally:
         camera.stop_recording()
 
-if __name__ == '__main__':
-    main(auto_envvar_prefix='CAMERA')
+
+def main():
+    cli(auto_envvar_prefix='CAMERA')
