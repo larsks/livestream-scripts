@@ -65,13 +65,18 @@ def main(resolution, height, width, bitrate, vflip, hflip,
     LOG.info('initializing camera with %s', camera_kwargs)
     camera = picamera.PiCamera(**camera_kwargs)
 
-    camera.vflip = vflip
-    camera.hflip = hflip
-    camera.brightness = brightness
-    camera.contrast = contrast
+    camera_config = {
+        'vflip': vflip,
+        'hflip': hflip,
+        'brightness': brightness,
+        'contrast': contrast,
+        'awb_mode': awb_mode,
+    }
 
-    if awb_mode is not None:
-        camera.awb_mode = awb_mode
+    LOG.info('configuring camera with %s', camera_config)
+    for k, v in camera_config.items():
+        if v is not None:
+            setattr(camera, k, v)
 
     if annotate_text:
         camera.annotate_text = datetime.datetime.now().strftime(annotate_text)
