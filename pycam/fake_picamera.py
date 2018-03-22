@@ -3,14 +3,22 @@ import time
 
 LOG = logging.getLogger(__name__)
 
+errmsg = '''You are using the fake picamera module. If you are
+running this code on a Raspberry Pi, please install
+the picamera module (https://picamera.readthedocs.io/).
+
+On Raspbian, you may install the module by running:
+
+    apt-get install python3-picamera
+
+'''
+
 
 class PiCamera:
     AWB_MODES = {'dummy': 0}
 
     def __init__(self, **kwargs):
-        LOG.warning('You are using the fake picamera module. If you are '
-                    'running this code on a raspberry pi, please install '
-                    'the picamera module.')
+        LOG.warning(errmsg)
 
     def start_recording(self, output, **kwargs):
         pass
