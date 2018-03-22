@@ -3,7 +3,6 @@
 import click
 import logging
 import datetime
-import signal
 import sys
 
 try:
@@ -47,9 +46,9 @@ RESOLUTIONS = {
 @click.option('-o', '--output', type=click.File(mode='wb'),
               default=sys.stdout.buffer)
 def cli(resolution, height, width, bitrate, vflip, hflip,
-         format, framerate, brightness, contrast, awb_mode,
-         annotate_text, annotate_text_size, annotate_background,
-         annotate_interval, loglevel, output):
+        format, framerate, brightness, contrast, awb_mode,
+        annotate_text, annotate_text_size, annotate_background,
+        annotate_interval, loglevel, output):
     logging.basicConfig(level=loglevel)
 
     camera_kwargs = {}
