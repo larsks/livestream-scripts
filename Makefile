@@ -4,17 +4,15 @@ SYSTEMCTL = systemctl
 
 all:
 
-install: install-scripts install-units
+install: install-scripts install-python install-units
 
-install-scripts: install-pycam
+install-scripts:
 	$(INSTALL) -m 755 livestream.sh /usr/local/bin/livestream
 
-install-pycam:
+install-python:
 	$(PIP) install $(PIPFLAGS) .
 
-install-units: install-services install-config
-
-install-config:
+install-units: install-services
 
 install-services:
 	$(INSTALL) -m 644 systemd/livestream.service \
