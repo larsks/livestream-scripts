@@ -24,12 +24,23 @@ RESOLUTIONS = {
 }
 
 
+def validate_rotation(ctx, param, value):
+    if value is None:
+        return
+
+    value = int(value)
+    if value in [0, 90, 180, 270]:
+        return value
+
+    raise click.BadParameter('rotation must be one of 0, 90, 180, 270')
+
+
 @click.command()
 @click.option('-R', '--resolution', type=click.Choice(RESOLUTIONS.keys()))
 @click.option('-h', '--height', type=int)
 @click.option('-w', '--width', type=int)
 @click.option('-b', '--bitrate', type=int)
-@click.option('-r', '--rotate', type=click.Choice(['0', '90', '180', '270']))
+@click.option('-r', '--rotate', type=int, callback=validate_rotation)
 @click.option('--vflip', is_flag=True)
 @click.option('--hflip', is_flag=True)
 @click.option('-f', '--framerate', type=float)
@@ -71,7 +82,7 @@ def cli(resolution, height, width, bitrate, rotate, vflip, hflip,
         'brightness': brightness,
         'contrast': contrast,
         'awb_mode': awb_mode,
-        'rotation': int(rotate),
+        'rotation': rotate,
     }
 
     LOG.info('configuring camera with %s', camera_config)
