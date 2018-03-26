@@ -1,5 +1,8 @@
 #!/bin/sh
 
+PATH=$HOME/bin:$HOME/.local/bin:$PATH
+export PATH
+
 : ${FFMPEG_LOGLEVEL:=warning}
 : ${FFMPEG_THREAD_QUEUE_SIZE:=256}
 
