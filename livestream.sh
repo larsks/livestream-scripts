@@ -11,7 +11,7 @@ if [ -z "$YOUTUBE_STREAM_KEY" ]; then
 	exit 1
 fi
 
-pycam --an '%Y-%m-%d %H:%M' --ai 60 --ab black |
+pycam |
 ffmpeg -hide_banner -loglevel $FFMPEG_LOGLEVEL \
 		-ar 44100 -ac 2 -acodec pcm_s16le -f s16le -ac 2 \
 	-i /dev/zero \
