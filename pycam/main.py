@@ -28,7 +28,8 @@ RESOLUTIONS = {
 @click.option('-R', '--resolution', type=click.Choice(RESOLUTIONS.keys()))
 @click.option('-h', '--height', type=int)
 @click.option('-w', '--width', type=int)
-@click.option('-r', '--bitrate', type=int)
+@click.option('-b', '--bitrate', type=int)
+@click.option('-r', '--rotate', type=click.Choice(['0', '90', '180', '270']))
 @click.option('--vflip', is_flag=True)
 @click.option('--hflip', is_flag=True)
 @click.option('-f', '--framerate', type=float)
@@ -45,7 +46,7 @@ RESOLUTIONS = {
 @click.option('--quiet', 'loglevel', flag_value='WARNING')
 @click.option('-o', '--output', type=click.File(mode='wb'),
               default=sys.stdout.buffer)
-def cli(resolution, height, width, bitrate, vflip, hflip,
+def cli(resolution, height, width, bitrate, rotate, vflip, hflip,
         format, framerate, brightness, contrast, awb_mode,
         annotate_text, annotate_text_size, annotate_background,
         annotate_interval, loglevel, output):
@@ -70,6 +71,7 @@ def cli(resolution, height, width, bitrate, vflip, hflip,
         'brightness': brightness,
         'contrast': contrast,
         'awb_mode': awb_mode,
+        'rotation': int(rotate),
     }
 
     LOG.info('configuring camera with %s', camera_config)
