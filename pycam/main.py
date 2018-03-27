@@ -105,7 +105,7 @@ def cli(resolution, height, width, bitrate, rotate, vflip, hflip,
         record_kwargs['format'] = format
 
     LOG.info('start recording with %s', record_kwargs)
-    camera.start_recording(output, **record_kwargs)
+    camera.start_recording(output, inline_headers=True, **record_kwargs)
 
     try:
         while True:
