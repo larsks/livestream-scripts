@@ -119,4 +119,7 @@ def cli(resolution, height, width, bitrate, rotate, vflip, hflip,
 
 
 def main():
-    cli(auto_envvar_prefix='CAMERA')
+    try:
+        cli(auto_envvar_prefix='CAMERA')
+    except (KeyboardInterrupt, ConnectionResetError):
+        pass
