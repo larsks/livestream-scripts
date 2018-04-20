@@ -1,0 +1,12 @@
+[Unit]
+Requires=camera-raw.socket
+After=camera-raw.socket
+
+[Socket]
+ListenStream=8001
+Accept=yes
+MaxConnections=1
+FileDescriptorName=camera-ffmpeg
+
+[Install]
+WantedBy=sockets.target

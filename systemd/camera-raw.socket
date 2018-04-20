@@ -1,0 +1,4 @@
+[Socket]
+ListenStream=8000
+Accept=yes
+MaxConnections=1

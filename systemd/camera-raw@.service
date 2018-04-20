@@ -1,0 +1,6 @@
+[Service]
+User=pi
+ExecStart=/home/pi/.local/bin/pycam -R 480p -b 2000000 -r 180 -f 20 --an 'cam1 %D %T' --ab black --ai 1
+StandardInput=null
+StandardOutput=socket
+StandardError=journal
