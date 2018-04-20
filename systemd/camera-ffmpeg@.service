@@ -4,3 +4,7 @@ ExecStart=/usr/bin/ffmpeg -loglevel warning -f h264 -r 20 -i tcp://localhost:800
 StandardInput=null
 StandardOutput=socket
 StandardError=journal
+
+# ffmpeg exits with an error code if the peer disconnects. this should not
+# be considered a failure.
+SuccessExitStatus=1
