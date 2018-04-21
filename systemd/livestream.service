@@ -4,7 +4,7 @@ Description=Live video stream
 [Service]
 User=pi
 WorkingDirectory=/home/pi
-EnvironmentFile=-/home/pi/livestream.conf
+EnvironmentFile=-/home/camera/config.livestream
 ExecStart=/usr/local/bin/livestream
 Restart=on-failure
 
