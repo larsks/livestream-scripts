@@ -1,6 +1,15 @@
+# This unit reads video from the camera and makes the raw h264 stream
+# available on the corresponding socket.
+
 [Service]
 User=pi
-ExecStart=/home/pi/.local/bin/pycam -R 480p -b 2000000 -r 180 -f 20 --an 'cam1 %D %T' --ab black --ai 1
+Environment=CAMERA_RESOLUTION=480p
+Environment=CAMERA_BITRATE=2000000
+Environment=CAMERA_FRAMERATE=20
+Environment=CAMERA_ANNOTATE_TEXT="cam1 %D %T"
+Environment=CAMERA_ANNOTATE_INTERVAL=1
+EnvironmentFile=-/etc/camera/config.pycam
+ExecStart=/home/pi/.local/bin/pycam
 StandardInput=null
 StandardOutput=socket
 StandardError=journal

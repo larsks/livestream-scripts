@@ -1,2 +1,4 @@
+# This unit reads the mpegts stream produced by camera-ffmpeg@.service and 
+# makes it available to multiple connecting clients.
 [Service]
 ExecStart=/bin/sh -c 'ncat localhost 8001 | ncat -l --send-only -k 8002'

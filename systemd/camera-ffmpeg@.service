@@ -1,6 +1,12 @@
+# This unit reads the video stream produced by the camera-raw@.service unit
+# and packages it as an mpegts stream.
+
 [Service]
 User=pi
-ExecStart=/usr/bin/ffmpeg -loglevel warning -f h264 -r 20 -i tcp://localhost:8000 -c copy -f mpegts -
+Environment=FFMPEG_LOGLEVEL=warning
+Environment=FFMPEG_FRAMERATE=20
+EnvironmentFile=-/etc/camera/config.ffmpeg
+ExecStart=/usr/bin/ffmpeg -loglevel $FFMPEG_LOGLEVEL -f h264 -r $FFMPEG_FRAMERATE -i tcp://localhost:8000 -c copy -f mpegts -
 StandardInput=null
 StandardOutput=socket
 StandardError=journal
