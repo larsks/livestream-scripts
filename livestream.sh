@@ -4,6 +4,7 @@ PATH=$HOME/bin:$HOME/.local/bin:$PATH
 export PATH
 
 : ${FFMPEG_LOGLEVEL:=warning}
+: ${FFMPEG_FRAMERATE:=20}
 : ${FFMPEG_THREAD_QUEUE_SIZE:=256}
 
 if [ -z "$YOUTUBE_STREAM_KEY" ]; then
@@ -18,5 +19,5 @@ ffmpeg -hide_banner -loglevel $FFMPEG_LOGLEVEL \
 		-thread_queue_size $FFMPEG_THREAD_QUEUE_SIZE -f h264 \
 	-i - \
 		-vcodec copy -acodec aac -ab 128k \
-		-g 50 -strict experimental -f flv \
+		-r $FFMPEG_FRAMERATE -g 50 -strict experimental -f flv \
 	rtmp://a.rtmp.youtube.com/live2/${YOUTUBE_STREAM_KEY}
